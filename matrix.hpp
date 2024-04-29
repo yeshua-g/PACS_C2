@@ -330,11 +330,56 @@ namespace algebra {
 
 
         // Method to read a matrix from a file in Matrix Market format
-        
+        void readMatrix(const std::string& filename) {
+            std::ifstream file(filename);
+            if (!file.is_open()) {
+                throw std::runtime_error("Failed to open file: " + filename);
+            }
 
-        // Method to return the number of columns
+            std::string line;
+            std::getline(file, line);
+            if (line != "%%MatrixMarket matrix coordinate real general") {
+                throw std::runtime_error("Invalid Matrix Market format");
+            }
+
+            std::getline(file, line);
+            std::istringstream iss(line);
+            std::size_t rows, cols, nnz;
+            iss >> rows >> cols >> nnz;
+
+            // Resize the matrix
+            resize(rows, cols);
+
+            // Read the matrix entries
+            for (std::size_t i = 0; i < nnz; ++i) {
+                std::getline(file, line);
+                std::istringstream iss(line);
+                std::size_t row, col;
+                T value;
+                iss >> row >> col >> value;
+
+                // Insert the value into the matrix
+                if (Order == StorageOrder::RowMajor) {
+                    (*this)(row - 1, col - 1) = value;
+                } else {
+                    (*this)(col - 1, row - 1) = value;
+                }
+            }
+
+            file.close();
+        }
+
+        
         std::size_t get_cols() const {
             return cols;
+        }
+
+        std::size_t get_rows() const {
+            return rows;
+        }
+
+        std::size_t get_nnz() const {
+            return data.size();
         }
 
         // Method to print the matrix
