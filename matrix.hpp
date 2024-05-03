@@ -18,7 +18,7 @@ namespace algebra {
         ColumnMajor
     };
 
-    template<typename T, StorageOrder Order>
+    template<typename T, StorageOrder Order=StorageOrder::RowMajor>
     class Matrix {
     private:
         std::map<std::array<std::size_t, 2>, T> data; // Map for dynamic construction
@@ -38,7 +38,7 @@ namespace algebra {
 
         // Constructor
         Matrix(std::size_t rows = 0, std::size_t cols = 0) : compressed(false), rows(rows), cols(cols)  {
-            if(Order==StorageOrder::ColumnMajor){
+            if constexpr(Order==StorageOrder::ColumnMajor){
                 std::swap(rows, cols);
             }
         }
@@ -69,7 +69,7 @@ namespace algebra {
             }
             if (compressed) {
             // In compressed state, only change the value of existing non-zero elements
-            if(Order == StorageOrder::RowMajor) {
+            if constexpr(Order == StorageOrder::RowMajor) {
                 std::size_t rowStart = outerIndex[i];
                 std::size_t rowEnd = outerIndex[i + 1];
                 // Search within this range in the innerIndex vector to find the column index j
@@ -95,7 +95,7 @@ namespace algebra {
             }
             } else {
             // In uncompressed state, insert or update element in the data map
-            if(Order==StorageOrder::ColumnMajor)
+            if constexpr(Order==StorageOrder::ColumnMajor)
                 std::swap(i, j);
             return data[std::array<std::size_t, 2>{i, j}];
             }
@@ -105,9 +105,9 @@ namespace algebra {
         void compress() {
             // Implementation to convert data to compressed format (CSR or CSC)
             if(!compressed){
-            if(Order==StorageOrder::ColumnMajor)
+            if constexpr(Order==StorageOrder::ColumnMajor)
                 CSC_compr();
-            else if(Order==StorageOrder::RowMajor)
+            else if constexpr(Order==StorageOrder::RowMajor)
                 CSR_compr();
             compressed = true; // Set compressed flag to true
             }
@@ -192,9 +192,9 @@ namespace algebra {
         void uncompress() {
             // Implementation to bring back to uncompressed state
              if(compressed){
-            if(Order==StorageOrder::ColumnMajor)
+            if constexpr(Order==StorageOrder::ColumnMajor)
                 CSC_uncompr();
-            else if(Order==StorageOrder::RowMajor)
+            else if constexpr(Order==StorageOrder::RowMajor)
                 CSR_uncompr();
             compressed = false; // Set compressed flag to true
             }
@@ -256,7 +256,7 @@ namespace algebra {
             }
             if(compressed) {
             // Implementation to return elements in compressed state
-            if(Order == StorageOrder::RowMajor) {
+            if constexpr(Order == StorageOrder::RowMajor) {
                 std::size_t colStart = outerIndex[j];
                 std::size_t colEnd = outerIndex[j + 1];
                 for(std::size_t k = colStart; k < colEnd; ++k) {
@@ -279,7 +279,7 @@ namespace algebra {
             }
             } else {
             // Implementation to return elements in uncompressed state
-            if(Order==StorageOrder::ColumnMajor)
+            if constexpr(Order==StorageOrder::ColumnMajor)
                 std::swap(i, j);
             auto it = data.find(std::array<std::size_t, 2>{i, j});
             if(it != data.end()) {
@@ -296,7 +296,7 @@ namespace algebra {
             std::vector<T> result(mat.rows, T{});
             
             if (mat.compressed) {
-            if (Order == StorageOrder::RowMajor) {
+            if constexpr(Order == StorageOrder::RowMajor) {
                 for (std::size_t i = 0; i < mat.rows; ++i) {
                 std::size_t rowStart = mat.outerIndex[i];
                 std::size_t rowEnd = mat.outerIndex[i + 1];
@@ -359,7 +359,7 @@ namespace algebra {
                 iss >> row >> col >> value;
 
                 // Insert the value into the matrix
-                if (Order == StorageOrder::RowMajor) {
+                if constexpr(Order == StorageOrder::RowMajor) {
                     (*this)(row - 1, col - 1) = value;
                 } else {
                     (*this)(col - 1, row - 1) = value;
@@ -404,14 +404,14 @@ namespace algebra {
                 }
                 std::cout << std::endl;
             }
-            else if (Order == StorageOrder::RowMajor) {
+            else if constexpr(Order == StorageOrder::RowMajor) {
                 for (std::size_t i = 0; i < rows; ++i) {
                 for (std::size_t j = 0; j < cols; ++j) {
                     std::cout << (*this)(i, j) << " ";
                 }
                 std::cout << std::endl;
                 }
-            } else if (Order == StorageOrder::ColumnMajor) {
+            } else if constexpr(Order == StorageOrder::ColumnMajor) {
                 for (std::size_t j = 0; j < cols; ++j) {
                 for (std::size_t i = 0; i < rows; ++i) {
                     std::cout << (*this)(i, j) << " ";
