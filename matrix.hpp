@@ -28,9 +28,9 @@ namespace algebra {
         bool compressed; // Flag to indicate compression state
         std::size_t rows;
         std::size_t cols;
-
+        
     public:
-
+    
         //method do check range
         bool checkRange(std::size_t i, std::size_t j) const {
             return  i < rows && j < cols;
@@ -379,7 +379,10 @@ namespace algebra {
         }
 
         std::size_t get_nnz() const {
+            if(compressed)
             return data.size();
+            else
+            return values.size();
         }
 
         // Method to print the matrix

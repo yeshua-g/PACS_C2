@@ -1,28 +1,36 @@
-# Compiler
-CXX = g++
+# Set PACS_ROOT to the path where pacs-examples/Examples is located
+PACS_ROOT = ../../pacs-examples/Examples
 
-# Compiler flags
-CXXFLAGS = -Wall -Wextra -std=c++11 
+# compiler and compilation options
+CXX ?= g++
+CXXFLAGS ?= -std=c++20
+CPPFLAGS ?= -O3 -Wall -I. -Wno-conversion-null -Wno-deprecated-declarations -I$(PACS_ROOT)/include
 
-# Rule to compile main.cpp
-main.o: main.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+LDFLAGS ?= -L$(PACS_ROOT)/lib -Wl,-rpath=$(PACS_ROOT)/lib
 
-# Rule to compile test.cpp
-test.o: test.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# executable name
+EXEC = main
 
-# Rule to link the executable for main.cpp
-main: main.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# source and object files
+SRCS = $(wildcard *.cpp)
+OBJS = $(SRCS:.cpp=.o)
 
-# Rule to link the executable for test.cpp
-test: test.o
-	$(CXX) $(CXXFLAGS) -o $@ $^
+# header files
+HDRS = $(wildcard *.hpp)
 
-# Default rule
-all: main test
+.PHONY = all $(EXEC) $(OBJS) clean distclean
 
-# Rule to clean the directory
+# rules
+all: $(EXEC)
+
+%.o: %.cpp $(HDRS)
+	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) $< -o $@
+
+$(EXEC): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+
 clean:
-	rm -f main.o test.o main test
+	$(RM) *.o
+
+distclean: clean
+	$(RM) $(EXEC)
