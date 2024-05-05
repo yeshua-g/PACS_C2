@@ -11,6 +11,10 @@ int main() {
     mat(1, 0) = {3, 3};
     mat(1, 1) = {4, 4};
 
+    // Print the matrix
+    mat.printMatrix();
+    std::cout << std::endl;
+
     // Create a vector with complex numbers
     std::vector<std::complex<double>> vec = {{1, 1}, {2, 2}};
 
@@ -18,10 +22,11 @@ int main() {
     std::vector<std::complex<double>> result = mat * vec;
 
     // Print the result
+    std::cout << "Matrix times vector Result:" << std::endl;
     for (const auto& val : result) {
         std::cout << val << ' ';
     }
-    std::cout << '\n';
+    std::cout << std::endl;
 
     return 0;
 }

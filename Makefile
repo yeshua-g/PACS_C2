@@ -55,10 +55,11 @@ test2: test2.o
 extras: extras.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
 
-# Rule to clean the object files
-clean:
-	rm -f $(MAIN_OBJS) $(TEST_OBJS) $(TEST2_OBJS) $(EXTRAS_OBJS)
+# Rule to build all executables
+all: main test test2 extras
 
-# Rule to clean the executables
-cleanall:
-	rm -f main test test2 extras
+# Rule to clean the object files and executables
+clean: 
+	rm -f $(MAIN_OBJS) $(TEST_OBJS) $(TEST2_OBJS) $(EXTRAS_OBJS) main test test2 extras
+
+
