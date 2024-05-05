@@ -17,11 +17,11 @@ CXXFLAGS = -O3 -Wall -I. -Wno-conversion-null -Wno-deprecated-declarations -I(//
 # Linker flags
 LDFLAGS = -L(//yourpathtopacs-examples/lib)  -Wl,-rpath=(//yourpathtopacs-examples/lib) 
 ```
-## main
+## MAIN
 the main is the requested code that tests the implementation
-## test
+## TEST
 test is an example with small matrixes to visualize the implementation 
-## test2
+## TEST2
 test 2 is to show that the matrix vector product works also with std::complex<T>
-## extras
+## EXTRAS
 extras is for the matrix time one column matrix and norms
