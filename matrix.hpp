@@ -466,14 +466,6 @@ namespace algebra {
             }
         }
 
-        //Method to print a vector
-        void printVec(std::vector<T> vec) const{
-            for (std::size_t i = 0; i < vec.size(); ++i) {
-                std::cout << vec[i] << " ";
-            }
-            std::cout << std::endl;
-        }
-
     // Friend operator for matrix-matrix(1 col) multiplication
         friend std::vector<T> operator*(const Matrix<T, Order>& mat, const Matrix<T, Order>& mat2) {
 
