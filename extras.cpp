@@ -69,6 +69,36 @@ std::cout << matrix4.get_nnz() << std::endl;
               << clock << std::endl;
 
 
+            std::cout << "\n\nTESTING MATRIX NORMS" << std::endl;
+
+            matrix3.uncompress();
+            matrix4.uncompress();
+
+            // Uncompressed, row-wise storage
+            std::cout << "Uncompressed, row-wise storage:" << std::endl;
+            std::cout << "Infinity norm: " << matrix3.norm<algebra::Norm::InfinityNorm>() << std::endl;
+            std::cout << "1-norm: " << matrix3.norm<algebra::Norm::OneNorm>() << std::endl;
+            std::cout << "Frobenius-norm: " << matrix3.norm<algebra::Norm::FrobeniusNorm>() << std::endl;
+
+            // Compressed, row-wise storage
+            std::cout << "Compressed, row-wise storage:" << std::endl;
+            matrix3.compress();
+            std::cout << "Infinity norm: " << matrix3.norm<algebra::Norm::InfinityNorm>() << std::endl;
+            std::cout << "1-norm: " << matrix3.norm<algebra::Norm::OneNorm>() << std::endl;
+            std::cout << "Frobenius-norm: " << matrix3.norm<algebra::Norm::FrobeniusNorm>() << std::endl;
+
+            // Uncompressed, column-wise storage
+            std::cout << "Uncompressed, column-wise storage:" << std::endl;
+            std::cout << "Infinity norm: " << matrix4.norm<algebra::Norm::InfinityNorm>() << std::endl;
+            std::cout << "1-norm: " << matrix4.norm<algebra::Norm::OneNorm>() << std::endl;
+            std::cout << "Frobenius-norm: " << matrix4.norm<algebra::Norm::FrobeniusNorm>() << std::endl;
+
+            // Compressed, column-wise storage
+            std::cout << "Compressed, column-wise storage:" << std::endl;
+            matrix4.compress();
+            std::cout << "Infinity norm: " << matrix4.norm<algebra::Norm::InfinityNorm>() << std::endl;
+            std::cout << "1-norm: " << matrix4.norm<algebra::Norm::OneNorm>() << std::endl;
+            std::cout << "Frobenius-norm: " << matrix4.norm<algebra::Norm::FrobeniusNorm>() << std::endl;
 
 return 0;
 }

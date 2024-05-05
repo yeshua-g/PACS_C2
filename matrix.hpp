@@ -8,6 +8,8 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <numeric>
+#include <cmath>
 
 
 
@@ -17,6 +19,14 @@ namespace algebra {
     enum class StorageOrder {
         RowMajor,
         ColumnMajor
+    };
+
+    // Enum class to specify the norm type
+    enum class Norm 
+    {
+        OneNorm,
+        FrobeniusNorm,
+        InfinityNorm
     };
 
     // Struct to define the comparison operator for the map
@@ -522,7 +532,93 @@ namespace algebra {
             return result;
         }
 
+    // Method to calculate the norm of the matrix
+    template <Norm n>
+    T norm() const {
+        if constexpr (n == Norm::OneNorm) {
+            auto sum_abs = [](double value, const auto& p) { return std::abs(value) + (std::abs(p.second)); };
+            std::vector<T> col_sums(cols, T{});
 
+            if constexpr (Order == StorageOrder::RowMajor) {
+                if (!compressed) {
+                    for (const auto& val : data) {
+                        col_sums[val.first[1]] += std::abs(val.second);
+                    }
+                } else {
+                    for (std::size_t i = 0; i < outerIndex.size(); ++i) {
+                        col_sums[outerIndex[i]] += std::abs(values[i]);
+                    }
+                }
+            } else {
+                if (!compressed) {
+                    for (std::size_t c = 0; c < cols; ++c) {
+                        col_sums[c] = std::accumulate(data.lower_bound({ 0, c }),
+                            data.upper_bound({ rows - 1, c }),
+                            0.,
+                            sum_abs);
+                    }
+                } else {
+                    for (std::size_t c = 0; c < cols; ++c) {
+                        for (std::size_t i = innerIndex[c]; i < innerIndex[c + 1]; ++i) {
+                            col_sums[c] += std::abs(values[i]);
+                        }
+                    }
+                }
+            }
+
+            return *std::max_element(col_sums.begin(), col_sums.end());
+        }
+
+        if constexpr (n == Norm::InfinityNorm) {
+            auto sum_abs = [](double value, const auto& p) { return std::abs(value) + (std::abs(p.second)); };
+            std::vector<T> row_sums(rows, T{});
+
+            if constexpr (Order == StorageOrder::RowMajor) {
+                if (!compressed) {
+                    for (std::size_t r = 0; r < rows; ++r) {
+                        row_sums[r] = std::accumulate(data.lower_bound({ r, 0 }),
+                            data.upper_bound({ r, cols - 1 }),
+                            0.,
+                            sum_abs);
+                    }
+                } else {
+                    for (std::size_t r = 0; r < rows; ++r) {
+                        for (std::size_t i = innerIndex[r]; i < innerIndex[r + 1]; ++i) {
+                            row_sums[r] += std::abs(values[i]);
+                        }
+                    }
+                }
+            } else {
+                if (!compressed) {
+                    for (const auto& val : data) {
+                        row_sums[val.first[0]] += std::abs(val.second);
+                    }
+                } else {
+                    for (std::size_t i = 0; i < outerIndex.size(); ++i) {
+                        row_sums[outerIndex[i]] += std::abs(values[i]);
+                    }
+                }
+            }
+
+            return *std::max_element(row_sums.begin(), row_sums.end());
+        }
+
+        if constexpr (n == Norm::FrobeniusNorm) {
+            if (!compressed) {
+                auto sum_square = [](double value, const auto& p) { return std::abs(value) + ((std::abs(p.second)) * (std::abs(p.second))); };
+                return std::sqrt(std::accumulate(data.cbegin(),
+                    data.cend(),
+                    0.,
+                    sum_square));
+            } else {
+                auto sum_square = [](double value, const auto& p) { return std::abs(value) + ((std::abs(p)) * (std::abs(p))); };
+                return std::sqrt(std::accumulate(values.cbegin(),
+                    values.cend(),
+                    0.,
+                    sum_square));
+            }
+        }
+    }
     };
 
     
