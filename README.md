@@ -9,8 +9,8 @@ The matrix class allows for flexibility in the storage of the matrix. Users can 
 algebra::Matrix<double,algebra::StorageOrder::RowMajor> matrix1; //for a rowmajor ordering
 algebra::Matrix<double,algebra::StorageOrder::ColMajor> matrix2; //for a colmajor ordering
 
-matrix.compress(); //CSR compressing technique
-matrix.compress(); //CSC compressing technique
+matrix1.compress(); //CSR compressing technique
+matrix2.compress(); //CSC compressing technique
 ```
 
 To let the program work the User can just type `make all` in the terminal and this will generate four executables called **main**, **test**, **test2** and **extras**
