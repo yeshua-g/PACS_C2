@@ -15,12 +15,20 @@ MAIN_OBJS = $(MAIN_SRCS:.cpp=.o)
 TEST_SRCS = test.cpp
 TEST_OBJS = $(TEST_SRCS:.cpp=.o)
 
+# Source and object files for test2
+TEST2_SRCS = test2.cpp
+TEST2_OBJS = $(TEST2_SRCS:.cpp=.o)
+
 # Rule to compile main.cpp
 main.o: main.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Rule to compile test.cpp
 test.o: test.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Rule to compile test.cpp
+test2.o: test2.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Rule to link the executable for main.cpp
@@ -31,10 +39,14 @@ main: main.o
 test: test.o
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
 
+# Rule to link the executable for test.cpp
+test2: test2.o
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $^
+
 # Rule to clean the object files
 clean:
-	rm -f $(MAIN_OBJS) $(TEST_OBJS)
+	rm -f $(MAIN_OBJS) $(TEST_OBJS) $(TEST2_OBJS)
 
 # Rule to clean the executables
 cleanall:
-	rm -f main test
+	rm -f main test test2
