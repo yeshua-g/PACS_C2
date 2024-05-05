@@ -7,7 +7,7 @@ The matrix class allows for flexibility in the storage of the matrix. Users can 
 
 ```
 algebra::Matrix<double,algebra::StorageOrder::RowMajor> matrix1; //for a rowmajor ordering
-algebra::Matrix<double,algebra::StorageOrder::ColMajor> matrix2; //for a rowmajor ordering
+algebra::Matrix<double,algebra::StorageOrder::ColMajor> matrix2; //for a colmajor ordering
 
 matrix.compress(); //CSR compressing technique
 matrix.compress(); //CSC compressing technique
