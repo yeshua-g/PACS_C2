@@ -463,8 +463,73 @@ namespace algebra {
             }
             std::cout << std::endl;
         }
+
+    // Friend operator for matrix-matrix(1 col) multiplication
+        friend std::vector<T> operator*(const Matrix<T, Order>& mat, const Matrix<T, Order>& mat2) {
+
+            std::size_t vec_size = mat2.get_rows();;
+            if(vec_size != mat.cols || mat2.get_cols() != 1)
+            throw std::invalid_argument("Invalid dimensions for matrix-vector multiplication");
+
+            std::vector<T> result(mat.rows, T{});
+            
+            if (mat.compressed) {
+            if constexpr(Order == StorageOrder::RowMajor) {
+                for (std::size_t i = 0; i < mat.rows; ++i) {
+                std::size_t rowStart = mat.innerIndex[i];
+                std::size_t rowEnd = mat.innerIndex[i + 1];
+                for (std::size_t k = rowStart; k < rowEnd; ++k) {
+                    std::size_t col = mat.outerIndex[k];
+                    result[i] += mat.values[k] * mat2(col, 0);
+                }
+                }
+            } else {
+                for (std::size_t j = 0; j < mat.cols; ++j) {
+                std::size_t colStart = mat.innerIndex[j];
+                std::size_t colEnd = mat.innerIndex[j + 1];
+                for (std::size_t k = colStart; k < colEnd; ++k) {
+                    std::size_t row = mat.outerIndex[k];
+                    result[row] += mat.values[k] * mat2(j, 0);
+                }
+                }
+            }
+            } else {
+            if constexpr(Order == StorageOrder::RowMajor) {
+                for (std::size_t i=0;i<mat.rows;i++) {
+                std::array<std::size_t, 2> indices = {i, 0};
+                auto lower=mat.data.lower_bound(indices);
+                indices={i,mat.cols-1};
+                auto upper=mat.data.upper_bound(indices);
+                for (auto it=lower;it!=upper;++it) {
+                    std::size_t col = it->first[1];
+                    result[i] += it->second * mat2(col, 0);
+                    }
+                }
+            }
+             else {
+                for (std::size_t j=0;j<mat.cols;j++) {
+                std::array<std::size_t, 2> indices = {0, j};
+                auto lower=mat.data.lower_bound(indices);
+                indices={mat.rows-1,j};
+                auto upper=mat.data.upper_bound(indices);
+                for (auto it=lower;it!=upper;++it) {
+                    std::size_t row = it->first[0];
+                    result[row] += it->second * mat2(j, 0);
+                    }
+                }
+            }
+        }
+            return result;
+        }
+
+
     };
+
+    
+    
 } // namespace algebra
+
+
 
     
 #endif // MATRIX_HPP
