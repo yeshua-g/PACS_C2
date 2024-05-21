@@ -1,0 +1,7 @@
+- add details for compiling the different tests in the README
+
+- friend functions should be defined outside the class
+
+- avoid putting all the definitions inside the same header (not very readable) and methods definition inside the class body
+
+- the implementation is correct and efficient 
